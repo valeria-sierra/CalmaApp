@@ -1,5 +1,6 @@
 package com.example.calmaapp_proyect
-
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,14 +9,24 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Call
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
@@ -28,6 +39,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -47,27 +60,28 @@ fun BakingScreen(
                 title = { Text(text = "Calma App") },
                 actions = {
                     IconButton(onClick = { currentScreen = Screen.Profile }) {
-                        Icon(painter = painterResource(id = R.drawable.ic_profile), contentDescription = "Perfil")
+                        Icon(imageVector = Icons.Filled.AccountCircle, contentDescription = "Perfil", tint = Color.White)
                     }
-                }
+                },
+                modifier = Modifier.background(Color(0xFF5CC2C6)) // Cambiar el color de la barra de herramientas
             )
         },
         bottomBar = {
-            BottomAppBar {
+            BottomAppBar(modifier = Modifier.background(Color(0xFF5CC2C6))) { // Cambiar el color de la barra de herramientas inferior
                 IconButton(onClick = { currentScreen = Screen.Home }, modifier = Modifier.weight(1f)) {
-                    Icon(painter = painterResource(id = R.drawable.ic_home), contentDescription = "Inicio")
+                    Icon(imageVector = Icons.Filled.Home, contentDescription = "Inicio", tint = Color.White)
                 }
                 IconButton(onClick = { currentScreen = Screen.Calendar }, modifier = Modifier.weight(1f)) {
-                    Icon(painter = painterResource(id = R.drawable.ic_calendar), contentDescription = "Calendario")
+                    Icon(imageVector = Icons.Filled.DateRange, contentDescription = "Calendario", tint = Color.White)
                 }
                 IconButton(onClick = { currentScreen = Screen.Emotion }, modifier = Modifier.weight(1f)) {
-                    Icon(painter = painterResource(id = R.drawable.ic_emotion), contentDescription = "Ayuda emocional")
+                    Icon(imageVector = Icons.Filled.Favorite, contentDescription = "Ayuda emocional", tint = Color.White)
                 }
                 IconButton(onClick = { currentScreen = Screen.Notification }, modifier = Modifier.weight(1f)) {
-                    Icon(painter = painterResource(id = R.drawable.ic_notification), contentDescription = "Notificaciones")
+                    Icon(imageVector = Icons.Filled.Notifications, contentDescription = "Notificaciones", tint = Color.White)
                 }
                 IconButton(onClick = { currentScreen = Screen.Call }, modifier = Modifier.weight(1f)) {
-                    Icon(painter = painterResource(id = R.drawable.ic_call), contentDescription = "Llamadas")
+                    Icon(imageVector = Icons.Filled.Call, contentDescription = "Llamadas", tint = Color.White)
                 }
             }
         },
@@ -82,7 +96,7 @@ fun BakingScreen(
         ) {
             when (currentScreen) {
                 Screen.Home -> HomeScreen { currentScreen = Screen.Chat }
-                Screen.Chat -> ChatScreen(bakingViewModel) { currentScreen = Screen.Home } // Agregar onExitChat
+                Screen.Chat -> ChatScreen(bakingViewModel) { currentScreen = Screen.Home }
                 Screen.Calendar -> GenericScreen(screenName = "Calendario")
                 Screen.Emotion -> GenericScreen(screenName = "Ayuda emocional")
                 Screen.Notification -> GenericScreen(screenName = "Notificaciones")
@@ -110,14 +124,17 @@ fun HomeScreen(onStartChat: () -> Unit) {
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(bottom = 32.dp)
         )
-        Button(onClick = onStartChat) {
+        Button(
+            onClick = onStartChat,
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5CC2C6)) // Cambiar el color del botón
+        ) {
             Text(text = "Iniciar chat")
         }
     }
 }
 
 @Composable
-fun ChatScreen(bakingViewModel: BakingViewModel, onExitChat: () -> Unit) { // Agregar onExitChat
+fun ChatScreen(bakingViewModel: BakingViewModel, onExitChat: () -> Unit) {
     val placeholderPrompt = stringResource(R.string.prompt_placeholder)
     var prompt by rememberSaveable { mutableStateOf(placeholderPrompt) }
     val uiState by bakingViewModel.uiState.collectAsState()
@@ -132,7 +149,7 @@ fun ChatScreen(bakingViewModel: BakingViewModel, onExitChat: () -> Unit) { // Ag
             horizontalArrangement = Arrangement.End
         ) {
             IconButton(onClick = onExitChat) {
-                Icon(painter = painterResource(id = R.drawable.ic_close), contentDescription = "Salir del chat")
+                Icon(imageVector = Icons.Filled.Clear, contentDescription = "Salir del chat", tint = Color.White)
             }
         }
 
@@ -204,7 +221,6 @@ fun GenericScreen(screenName: String) {
 }
 
 data class ChatMessage(val sender: String, val text: String)
-
 enum class Screen {
     Home, Chat, Calendar, Emotion, Notification, Call, Profile
 }
@@ -212,5 +228,6 @@ enum class Screen {
 @Preview(showSystemUi = true)
 @Composable
 fun BakingScreenPreview() {
-    BakingScreen()
+// Preview ahora muestra la WelcomeScreen
+    WelcomeScreen(onSignInClick = {}, onSignUpClick = {})
 }
