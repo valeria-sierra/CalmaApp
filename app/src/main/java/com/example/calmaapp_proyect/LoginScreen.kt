@@ -1,5 +1,6 @@
 package com.example.calmaapp_proyect
 
+
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -11,12 +12,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,90 +44,106 @@ fun LoginScreen(onLoginSuccess: () -> Unit, onNavigateToRegister: () -> Unit) {
         modifier = Modifier.fillMaxSize(),
         contentScale = ContentScale.Crop
     )
+    val scrollState = rememberScrollState()
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(16.dp)
+            .verticalScroll(scrollState), // Añadimos el verticalScroll modifier
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
+        verticalArrangement = Arrangement.Center
     ) {
-        Row(
+// Logo más grande en la parte superior
+        Image(
+            painter = painterResource(id = R.drawable.ic_logo), // Reemplaza con el nombre de tu logo
+            contentDescription = "Logo de Calma App",
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 32.dp),
-            horizontalArrangement = Arrangement.SpaceAround
-        ) {
-            Button(
-                onClick = onLoginSuccess,
-                modifier = Modifier.weight(1f),
-                colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = Color(0xFF5CC2C6))
-            ) {
-                Text("Inicia Sesión", color = Color.White)
-            }
-            Spacer(modifier = Modifier.weight(0.1f))
-            Button(
-                onClick = onNavigateToRegister,
-                modifier = Modifier.weight(1f),
-                colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = Color.LightGray)
-            ) {
-                Text("Regístrate", color = Color.White)
-            }
-        }
+                .height(150.dp)
+                .padding(bottom = 32.dp)
+        )
 
+// Contenedor central para los campos de inicio de sesión y botones
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .background(Color(0x80ADD8E6), RoundedCornerShape(16.dp))
+                .fillMaxWidth(0.8f)
+                .background(Color(0xFFA2DFDD), RoundedCornerShape(42.dp))
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Text(
-                text = "Ingresa tus datos",
-                style = MaterialTheme.typography.titleMedium,
-                color = Color.White,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp)
+                    .height(48.dp), // Establece una altura fija para el contenedor de los botones
+                horizontalArrangement = Arrangement.Center // Centramos los botones dentro del Box
+            ) {
+                androidx.compose.foundation.layout.Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center // Centramos el contenido dentro del Box
+                ) {
+                    Button(
+                        onClick = onNavigateToRegister,
+                        modifier = Modifier
+                            .fillMaxWidth(0.6f) // Ocupa un porcentaje del ancho
+                            .align(Alignment.CenterEnd), // Alinea el botón "Regístrate" a la derecha
+                        colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = Color.LightGray)
+                    ) {
+                        Text(" Regístrate", color = Color.White)
+                    }
+                    Button(
+                        onClick = onLoginSuccess,
+                        modifier = Modifier
+                            .fillMaxWidth(0.5f) // Ocupa el mismo porcentaje del ancho
+                            .align(Alignment.CenterStart), // Alinea el botón "Inicia Sesión" a la izquierda
+                        colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = Color(0xFF5CC2C6))
+                    ) {
+                        Text("Inicia Sesión", color = Color.White)
+                    }
+                }
+            }
 
             var email by remember { mutableStateOf("") }
-            OutlinedTextField(
+            TextField(
                 value = email,
                 onValueChange = { email = it },
-                label = { Text("Correo electrónico", color = Color.White) },
+                label = { Text("Correo electrónico:", color = Color.White) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
-                colors = androidx.compose.material3.TextFieldDefaults.outlinedTextFieldColors(
-
+                colors = TextFieldDefaults.textFieldColors(
                     cursorColor = Color.White,
-                    focusedBorderColor = Color(0xFF5CC2C6),
-                    unfocusedBorderColor = Color.White,
+                    focusedIndicatorColor = Color.White,
+                    unfocusedIndicatorColor = Color.White,
+                    disabledIndicatorColor = Color.White,
                     focusedLabelColor = Color(0xFF5CC2C6),
-                    unfocusedLabelColor = Color.White
+                    unfocusedLabelColor = Color.White,
+                    containerColor = Color(0xFFA2DFDD)
                 )
             )
             Spacer(modifier = Modifier.height(8.dp))
             var password by remember { mutableStateOf("") }
-            OutlinedTextField(
+            TextField(
                 value = password,
                 onValueChange = { password = it },
-                label = { Text("Contraseña", color = Color.White) },
+                label = { Text("Contraseña:", color = Color.White) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 visualTransformation = PasswordVisualTransformation(),
-                colors = androidx.compose.material3.TextFieldDefaults.outlinedTextFieldColors(
+                colors = TextFieldDefaults.textFieldColors(
 
                     cursorColor = Color.White,
-                    focusedBorderColor = Color(0xFF5CC2C6),
-                    unfocusedBorderColor = Color.White,
+                    focusedIndicatorColor = Color.White,
+                    unfocusedIndicatorColor = Color.White,
+                    disabledIndicatorColor = Color.White,
                     focusedLabelColor = Color(0xFF5CC2C6),
-                    unfocusedLabelColor = Color.White
+                    unfocusedLabelColor = Color.White,
+                    containerColor = Color(0xFFA2DFDD)
                 )
             )
             Spacer(modifier = Modifier.height(24.dp))
             Button(
                 onClick = {
-                    Log.d("LoginScreen", "Botón Ingresar clickeado") // Añade esta línea
+                    Log.d("LoginScreen", "Botón Ingresar clickeado")
                     onLoginSuccess()
                 },
                 modifier = Modifier.fillMaxWidth(),

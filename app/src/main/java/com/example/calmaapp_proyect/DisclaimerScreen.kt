@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,6 +22,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun DisclaimerScreen(onAcceptDisclaimer: () -> Unit) {
@@ -35,43 +37,66 @@ fun DisclaimerScreen(onAcceptDisclaimer: () -> Unit) {
             .fillMaxSize()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.SpaceBetween // Espacio entre logo, aviso y botón
     ) {
-        Column(
+        // Logo en la parte superior
+        Image(
+            painter = painterResource(id = R.drawable.ic_logo), // Reemplaza con el nombre de tu logo
+            contentDescription = "Logo de Calma App",
             modifier = Modifier
-                .fillMaxWidth()
-                .background(Color(0x80ADD8E6), RoundedCornerShape(16.dp))
-                .padding(32.dp),
+                .height(120.dp)
+                .padding(top = 32.dp)
+        )
+
+        // Contenedor para "Aviso Importante" y el cuerpo del texto
+        Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text(
-                text = "Aviso Importante",
-                style = MaterialTheme.typography.headlineSmall,
-                color = Color.White,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
+            Column(
+                modifier = Modifier
+                    .background(Color(0xFF5CC2C6), RoundedCornerShape(8.dp)) // Fondo sólido
+                    .padding(8.dp)
+                    .fillMaxWidth(), // Ocupa todo el ancho disponible
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Aviso Importante",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = Color.White,
+                    textAlign = TextAlign.Center
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = "Debes recordar que esta aplicación es una herramienta de ayuda emocional y no sustituye un proceso psicoterapéutico.",
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodyLarge.copy(lineHeight = 24.sp, fontSize = 16.sp),
                 color = Color.White,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(bottom = 16.dp)
+                modifier = Modifier.padding(horizontal = 32.dp) // Añade padding horizontal al texto
             )
             Text(
                 text = "Esperamos utilices de manera responsable las herramientas dadas.",
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodyLarge.copy(lineHeight = 24.sp, fontSize = 16.sp),
                 color = Color.White,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(bottom = 24.dp)
+                modifier = Modifier.padding(horizontal = 32.dp) // Añade padding horizontal al texto
             )
+            Spacer(modifier = Modifier.height(24.dp))
+            // Botón "Acepto" ahora dentro de esta columna
             Button(
                 onClick = onAcceptDisclaimer,
-                colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = Color(0xFF5CC2C6))
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 32.dp), // Añade padding horizontal al botón
+                colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = Color(0xFF5CC2C6)),
+                contentPadding = PaddingValues(horizontal = 32.dp, vertical = 12.dp),
+                shape = RoundedCornerShape(8.dp)
             ) {
-                Text("Acepto", color = Color.White)
+                Text("Acepto", color = Color.White, fontSize = 18.sp)
             }
         }
+
+        Spacer(modifier = Modifier.height(32.dp)) // Espacio inferior
     }
 }
