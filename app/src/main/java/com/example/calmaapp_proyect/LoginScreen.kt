@@ -1,6 +1,5 @@
 package com.example.calmaapp_proyect
 
-
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -34,12 +33,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(onLoginSuccess: () -> Unit, onNavigateToRegister: () -> Unit) {
     Image(
-        painter = painterResource(id = R.drawable.ic_background), // Reemplaza con tu imagen de fondo
+        painter = painterResource(id = R.drawable.ic_background),
         contentDescription = "Fondo de la pantalla de inicio de sesión",
         modifier = Modifier.fillMaxSize(),
         contentScale = ContentScale.Crop
@@ -49,20 +53,18 @@ fun LoginScreen(onLoginSuccess: () -> Unit, onNavigateToRegister: () -> Unit) {
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
-            .verticalScroll(scrollState), // Añadimos el verticalScroll modifier
+            .verticalScroll(scrollState),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-// Logo más grande en la parte superior
         Image(
-            painter = painterResource(id = R.drawable.ic_logo), // Reemplaza con el nombre de tu logo
+            painter = painterResource(id = R.drawable.ic_logo),
             contentDescription = "Logo de Calma App",
             modifier = Modifier
                 .height(150.dp)
                 .padding(bottom = 32.dp)
         )
 
-// Contenedor central para los campos de inicio de sesión y botones
         Column(
             modifier = Modifier
                 .fillMaxWidth(0.8f)
@@ -75,27 +77,27 @@ fun LoginScreen(onLoginSuccess: () -> Unit, onNavigateToRegister: () -> Unit) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp)
-                    .height(48.dp), // Establece una altura fija para el contenedor de los botones
-                horizontalArrangement = Arrangement.Center // Centramos los botones dentro del Box
+                    .height(48.dp),
+                horizontalArrangement = Arrangement.Center
             ) {
                 androidx.compose.foundation.layout.Box(
                     modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center // Centramos el contenido dentro del Box
+                    contentAlignment = Alignment.Center
                 ) {
                     Button(
                         onClick = onNavigateToRegister,
                         modifier = Modifier
-                            .fillMaxWidth(0.6f) // Ocupa un porcentaje del ancho
-                            .align(Alignment.CenterEnd), // Alinea el botón "Regístrate" a la derecha
+                            .fillMaxWidth(0.6f)
+                            .align(Alignment.CenterEnd),
                         colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = Color.LightGray)
                     ) {
                         Text(" Regístrate", color = Color.White)
                     }
                     Button(
-                        onClick = onLoginSuccess,
+                        onClick = { /* Lógica de navegación al inicio de sesión (ya estamos aquí) */ },
                         modifier = Modifier
-                            .fillMaxWidth(0.5f) // Ocupa el mismo porcentaje del ancho
-                            .align(Alignment.CenterStart), // Alinea el botón "Inicia Sesión" a la izquierda
+                            .fillMaxWidth(0.5f)
+                            .align(Alignment.CenterStart),
                         colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = Color(0xFF5CC2C6))
                     ) {
                         Text("Inicia Sesión", color = Color.White)
@@ -130,7 +132,6 @@ fun LoginScreen(onLoginSuccess: () -> Unit, onNavigateToRegister: () -> Unit) {
                 modifier = Modifier.fillMaxWidth(),
                 visualTransformation = PasswordVisualTransformation(),
                 colors = TextFieldDefaults.textFieldColors(
-
                     cursorColor = Color.White,
                     focusedIndicatorColor = Color.White,
                     unfocusedIndicatorColor = Color.White,
@@ -141,15 +142,42 @@ fun LoginScreen(onLoginSuccess: () -> Unit, onNavigateToRegister: () -> Unit) {
                 )
             )
             Spacer(modifier = Modifier.height(24.dp))
+
+            var errorMessage by remember { mutableStateOf<String?>(null) }
+            val auth: FirebaseAuth = Firebase.auth
+
             Button(
                 onClick = {
-                    Log.d("LoginScreen", "Botón Ingresar clickeado")
-                    onLoginSuccess()
+                    auth.signInWithEmailAndPassword(email, password)
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                // Inicio de sesión exitoso
+                                Log.d("Login", "signInWithEmail:success")
+                                onLoginSuccess()
+                            } else {
+                                // Si falla el inicio de sesión, muestra el error
+                                Log.w("Login", "signInWithEmail:failure", task.exception)
+                                errorMessage = task.exception?.localizedMessage ?: "Error al iniciar sesión."
+                            }
+                        }
                 },
                 modifier = Modifier.fillMaxWidth(),
                 colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = Color(0xFF5CC2C6))
             ) {
                 Text("Ingresar", color = Color.White)
+            }
+
+            errorMessage?.let {
+                AlertDialog(
+                    onDismissRequest = { errorMessage = null },
+                    title = { Text("Error de Inicio de Sesión") },
+                    text = { Text(it) },
+                    confirmButton = {
+                        TextButton(onClick = { errorMessage = null }) {
+                            Text("Aceptar")
+                        }
+                    }
+                )
             }
         }
     }

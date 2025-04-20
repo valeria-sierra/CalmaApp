@@ -1,3 +1,4 @@
+// MainActivity.kt
 package com.example.calmaapp_proyect
 
 import android.os.Bundle
@@ -11,10 +12,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.calmaapp_proyect.ui.theme.Calmaapp_proyectTheme
+import com.google.firebase.FirebaseApp
 
 class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    FirebaseApp.initializeApp(this)
     setContent {
       Calmaapp_proyectTheme {
         val navController = rememberNavController()
@@ -31,7 +34,7 @@ class MainActivity : ComponentActivity() {
             }
             composable("login") {
               LoginScreen(
-                onLoginSuccess = { navController.navigate("disclaimer") }, // ¡Asegúrate de que esto esté aquí!
+                onLoginSuccess = { navController.navigate("disclaimer") },
                 onNavigateToRegister = { navController.navigate("register") }
               )
             }
@@ -39,7 +42,7 @@ class MainActivity : ComponentActivity() {
               RegisterScreen(onNavigateToLogin = { navController.popBackStack() })
             }
             composable("disclaimer") {
-              DisclaimerScreen(onAcceptDisclaimer = { navController.navigate("main_app") }) // Navega a la app principal al aceptar
+              DisclaimerScreen(onAcceptDisclaimer = { navController.navigate("main_app") })
             }
             composable("main_app") {
               BakingScreen()

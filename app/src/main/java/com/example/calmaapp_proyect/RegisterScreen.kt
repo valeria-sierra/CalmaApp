@@ -35,12 +35,20 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.tasks.await
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(onNavigateToLogin: () -> Unit) {
     Image(
-        painter = painterResource(id = R.drawable.ic_background), // Reemplaza con tu imagen de fondo
+        painter = painterResource(id = R.drawable.ic_background),
         contentDescription = "Fondo de la pantalla de registro",
         modifier = Modifier.fillMaxSize(),
         contentScale = ContentScale.Crop
@@ -50,27 +58,24 @@ fun RegisterScreen(onNavigateToLogin: () -> Unit) {
             .fillMaxSize()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceBetween // Centramos verticalmente
+        verticalArrangement = Arrangement.SpaceBetween
     ) {
-        // Logo en la parte superior
         Image(
-            painter = painterResource(id = R.drawable.ic_logo), // Reemplaza con el nombre de tu logo
+            painter = painterResource(id = R.drawable.ic_logo),
             contentDescription = "Logo de Calma App",
             modifier = Modifier
                 .height(120.dp)
                 .padding(top = 32.dp)
         )
 
-        // Contenedor central para el registro
         Column(
             modifier = Modifier
-                .fillMaxWidth(1f)
-                .background(Color(0xFFA2DFDD), RoundedCornerShape(42.dp)) // Fondo sólido
+                .fillMaxWidth(0.8f)
+                .background(Color(0xFFA2DFDD), RoundedCornerShape(42.dp))
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // Botones Inicia Sesión / Regístrate
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -79,11 +84,11 @@ fun RegisterScreen(onNavigateToLogin: () -> Unit) {
                 horizontalArrangement = Arrangement.Center
             ) {
                 androidx.compose.foundation.layout.Box(
-                    modifier = Modifier.fillMaxWidth(0.8f),
+                    modifier = Modifier.fillMaxWidth(),
                     contentAlignment = Alignment.Center
                 ) {
                     Button(
-                        onClick = { /* TODO: Navegar a registro (ya estamos aquí) */ },
+                        onClick = { /* Ya estamos en registro */ },
                         modifier = Modifier
                             .fillMaxWidth(0.6f)
                             .align(Alignment.CenterEnd)
@@ -113,14 +118,13 @@ fun RegisterScreen(onNavigateToLogin: () -> Unit) {
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 colors = TextFieldDefaults.textFieldColors(
-
                     cursorColor = Color.White,
                     focusedIndicatorColor = Color.White,
                     unfocusedIndicatorColor = Color.White,
                     disabledIndicatorColor = Color.White,
                     focusedLabelColor = Color(0xFF5CC2C6),
                     unfocusedLabelColor = Color.White,
-                    containerColor = Color.Transparent // Fondo transparente
+                    containerColor = Color.Transparent
                 )
             )
 
@@ -132,7 +136,6 @@ fun RegisterScreen(onNavigateToLogin: () -> Unit) {
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 colors = TextFieldDefaults.textFieldColors(
-
                     cursorColor = Color.White,
                     focusedIndicatorColor = Color.White,
                     unfocusedIndicatorColor = Color.White,
@@ -151,7 +154,6 @@ fun RegisterScreen(onNavigateToLogin: () -> Unit) {
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 colors = TextFieldDefaults.textFieldColors(
-
                     cursorColor = Color.White,
                     focusedIndicatorColor = Color.White,
                     unfocusedIndicatorColor = Color.White,
@@ -170,7 +172,6 @@ fun RegisterScreen(onNavigateToLogin: () -> Unit) {
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 colors = TextFieldDefaults.textFieldColors(
-
                     cursorColor = Color.White,
                     focusedIndicatorColor = Color.White,
                     unfocusedIndicatorColor = Color.White,
@@ -190,7 +191,6 @@ fun RegisterScreen(onNavigateToLogin: () -> Unit) {
                 modifier = Modifier.fillMaxWidth(),
                 visualTransformation = PasswordVisualTransformation(),
                 colors = TextFieldDefaults.textFieldColors(
-
                     cursorColor = Color.White,
                     focusedIndicatorColor = Color.White,
                     unfocusedIndicatorColor = Color.White,
@@ -210,7 +210,6 @@ fun RegisterScreen(onNavigateToLogin: () -> Unit) {
                 modifier = Modifier.fillMaxWidth(),
                 visualTransformation = PasswordVisualTransformation(),
                 colors = TextFieldDefaults.textFieldColors(
-
                     cursorColor = Color.White,
                     focusedIndicatorColor = Color.White,
                     unfocusedIndicatorColor = Color.White,
@@ -223,32 +222,110 @@ fun RegisterScreen(onNavigateToLogin: () -> Unit) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            var showDialog by remember { mutableStateOf(false) }
+            var errorMessage by remember { mutableStateOf<String?>(null) }
+            val auth: FirebaseAuth = Firebase.auth
+            val db: FirebaseFirestore = Firebase.firestore
+            val coroutineScope = rememberCoroutineScope()
 
             Button(
                 onClick = {
-                    // Aquí iría la lógica de registro real
-                    showDialog = true
+                    if (password == confirmPassword) {
+                        coroutineScope.launch {
+                            val emailExists = checkEmailExists(email)
+                            val phoneExists = checkPhoneExists(phoneNumber)
+
+                            if (emailExists) {
+                                errorMessage = "Este correo electrónico ya está registrado."
+                            } else if (phoneExists) {
+                                errorMessage = "Este número de teléfono ya está registrado."
+                            } else {
+                                // Correo y teléfono no existen, proceder con el registro
+                                auth.createUserWithEmailAndPassword(email, password)
+                                    .addOnCompleteListener { task ->
+                                        if (task.isSuccessful) {
+                                            // Registro exitoso, guardar datos adicionales en Firestore
+                                            Log.d("Register", "createUserWithEmail:success")
+                                            val user = auth.currentUser
+                                            user?.let {
+                                                val userData = hashMapOf(
+                                                    "names" to names,
+                                                    "lastNames" to lastNames,
+                                                    "phoneNumber" to phoneNumber,
+                                                    "email" to email
+                                                )
+                                                db.collection("users")
+                                                    .document(it.uid)
+                                                    .set(userData)
+                                                    .addOnSuccessListener {
+                                                        Log.d("Firestore", "User data saved successfully")
+                                                        onNavigateToLogin()
+                                                    }
+                                                    .addOnFailureListener { e ->
+                                                        Log.w("Firestore", "Error saving user data", e)
+                                                        errorMessage = "Error al guardar los datos del usuario."
+                                                        // Opcional: Borrar el usuario recién creado si falla el guardado de datos
+                                                        it.delete()
+                                                    }
+                                            }
+                                        } else {
+                                            // Si falla el registro, muestra el error
+                                            Log.w("Register", "createUserWithEmail:failure", task.exception)
+                                            errorMessage = task.exception?.localizedMessage ?: "Error al registrar usuario."
+                                        }
+                                    }
+                            }
+                        }
+                    } else {
+                        errorMessage = "Las contraseñas no coinciden."
+                    }
                 },
                 modifier = Modifier.fillMaxWidth(),
                 colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = Color(0xFF5CC2C6))
             ) {
-                Text("Continúa", color = Color.White)
+                Text("Regístrate", color = Color.White)
             }
 
-            if (showDialog) {
+            errorMessage?.let {
                 AlertDialog(
-                    onDismissRequest = { showDialog = false },
-                    title = { Text("Registro Exitoso") },
-                    text = { Text("Registro exitoso y volver a la pantalla de inicio de sesión") },
+                    onDismissRequest = { errorMessage = null },
+                    title = { Text("Error de Registro") },
+                    text = { Text(it) },
                     confirmButton = {
-                        TextButton(onClick = onNavigateToLogin) {
+                        TextButton(onClick = { errorMessage = null }) {
                             Text("Aceptar")
                         }
                     }
                 )
             }
         }
-        Spacer(modifier = Modifier.height(32.dp)) // Espacio inferior
+        Spacer(modifier = Modifier.height(32.dp))
+    }
+}
+
+suspend fun checkEmailExists(email: String): Boolean {
+    val db = Firebase.firestore
+    return try {
+        val snapshot = db.collection("users")
+            .whereEqualTo("email", email)
+            .get()
+            .await()
+        snapshot.documents.isNotEmpty()
+    } catch (e: Exception) {
+        Log.w("Register", "Error checking email existence", e)
+        false
+    }
+}
+
+suspend fun checkPhoneExists(phoneNumber: String): Boolean {
+    val db = Firebase.firestore
+    return try {
+        val snapshot = db.collection("users")
+            .whereEqualTo("phoneNumber", phoneNumber)
+            .get()
+            .await()
+        snapshot.documents.isNotEmpty()
+    } catch (e: Exception) {
+        Log.w("Register", "Error checking phone existence", e)
+        false
     }
 }

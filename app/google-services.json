@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1069763786198",
+    "project_id": "calmaapp-63080",
+    "storage_bucket": "calmaapp-63080.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1069763786198:android:2de9049c8ca066e874e077",
+        "android_client_info": {
+          "package_name": "com.example.calmaapp_proyect"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChWetUW9QbNARrqWhX7HdJMMuAzB6OVdw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
