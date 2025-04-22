@@ -46,6 +46,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.calmaapp_proyect.AccountScreen
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -101,7 +104,7 @@ fun BakingScreen(
                 Screen.Emotion -> GenericScreen(screenName = "Ayuda emocional")
                 Screen.Notification -> GenericScreen(screenName = "Notificaciones")
                 Screen.Call -> GenericScreen(screenName = "Llamadas")
-                Screen.Profile -> GenericScreen(screenName = "Perfil")
+                Screen.Profile -> AccountScreen()
             }
         }
     }
