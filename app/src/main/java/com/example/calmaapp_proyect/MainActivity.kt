@@ -45,10 +45,14 @@ class MainActivity : ComponentActivity() {
               DisclaimerScreen(onAcceptDisclaimer = { navController.navigate("main_app") })
             }
             composable("main_app") {
-              BakingScreen(navController = navController) // Pasar el navController
-            }
-            composable("history") {
-              HistoryScreen(onBack = { navController.popBackStack() })
+              BakingScreen(
+                onLogout = {
+                  navController.navigate("welcome") {
+                    // Esto limpia el back stack para que no se pueda volver atrás
+                    popUpTo("welcome") { inclusive = true }
+                  }
+                }
+              )
             }
           }
         }
