@@ -46,13 +46,16 @@ class MainActivity : ComponentActivity() {
             }
             composable("main_app") {
               BakingScreen(
+                navController = navController, // Pasar el navController aquí
                 onLogout = {
                   navController.navigate("welcome") {
-                    // Esto limpia el back stack para que no se pueda volver atrás
                     popUpTo("welcome") { inclusive = true }
                   }
                 }
               )
+            }
+            composable("history") {
+              HistoryScreen(onBack = { navController.popBackStack() })
             }
           }
         }
