@@ -175,7 +175,7 @@ fun HomeScreen(onStartChat: () -> Unit, navController: NavHostController) {
         )
 
         Text(
-            text = "¿en qué puedo ayudarte?",
+            text = "¿En qué puedo ayudarte?",
             style = MaterialTheme.typography.bodyLarge.copy(color = Color.White)
         )
 

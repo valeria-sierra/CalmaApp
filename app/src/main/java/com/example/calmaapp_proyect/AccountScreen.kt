@@ -1,25 +1,29 @@
 package com.example.calmaapp_proyect
 
+import android.content.Context
+import android.widget.Toast
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import android.content.Context
-import android.widget.Toast
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.livedata.observeAsState
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -48,7 +52,7 @@ fun AccountScreen(
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showLogoutDialog by remember { mutableStateOf(false) }
 
-    // Cargar datos del usuario al iniciar
+    //cargar datos del usuario al iniciar
     LaunchedEffect(Unit) {
         isLoading = true
         try {
@@ -61,26 +65,19 @@ fun AccountScreen(
         }
         isLoading = false
     }
-
-    // Diálogo para confirmar eliminación de cuenta
+    //diálogo para confirmar eliminación de cuenta
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
             title = { Text("Confirmar eliminación") },
-            text = { Text("¿Estás seguro de que quieres eliminar tu cuenta permanentemente? Esta acción no se puede deshacer.") },
+            text = { Text("¿Estás seguro de que quieres eliminar tu cuenta permanentemente?") },
             confirmButton = {
-                TextButton(
-                    onClick = {
-                        showDeleteDialog = false
-                        if (currentUser != null) {
-                            deleteAccount(
-                                userId = currentUser.uid,
-                                context = context,
-                                onSuccess = onLogout
-                            )
-                        }
+                TextButton(onClick = {
+                    showDeleteDialog = false
+                    if (currentUser != null) {
+                        deleteAccount(currentUser.uid, context, onLogout)
                     }
-                ) {
+                }) {
                     Text("Eliminar", color = Color.Red)
                 }
             },
@@ -91,21 +88,18 @@ fun AccountScreen(
             }
         )
     }
-
-    // Diálogo para confirmar cierre de sesión
+    //diálogo para confirmar cierre de sesión
     if (showLogoutDialog) {
         AlertDialog(
             onDismissRequest = { showLogoutDialog = false },
             title = { Text("Cerrar sesión") },
             text = { Text("¿Estás seguro de que quieres cerrar tu sesión?") },
             confirmButton = {
-                TextButton(
-                    onClick = {
-                        showLogoutDialog = false
-                        auth.signOut()
-                        onLogout()
-                    }
-                ) {
+                TextButton(onClick = {
+                    showLogoutDialog = false
+                    auth.signOut()
+                    onLogout()
+                }) {
                     Text("Cerrar sesión")
                 }
             },
@@ -117,130 +111,170 @@ fun AccountScreen(
         )
     }
 
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(16.dp)
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Header
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(bottom = 24.dp)
+            horizontalArrangement = Arrangement.Start,
+            modifier = Modifier
+                .fillMaxWidth()
+            //.padding(bottom = 10.dp)
         ) {
             IconButton(onClick = onBackClick) {
                 Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
             }
-            Text(
-                text = "MI CUENTA",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF5CC2C6),
-                modifier = Modifier.padding(start = 8.dp)
+        }
+        Box(
+            modifier = Modifier
+                .size(80.dp)
+                .background(Color.White, shape = CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+
+            Icon(
+                imageVector = Icons.Default.AccountCircle,
+                contentDescription = null,
+                modifier = Modifier.size(70.dp),
+                tint = Color(0xFF5CC2C6)
             )
         }
 
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = "Mi cuenta",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF5CC2C6)
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
         if (isLoading) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+            CircularProgressIndicator()
         } else {
-            // Sección Nombre
-            SectionTitle("Nombre:")
-            OutlinedTextField(
-                value = nombre,
-                onValueChange = { nombre = it },
+            Card(
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("Ingresa tu nombre") }
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Sección Correo
-            SectionTitle("Correo electrónico:")
-            OutlinedTextField(
-                value = correo,
-                onValueChange = { correo = it },
-                modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("Ingresa tu correo") },
-                enabled = false // El correo no se puede editar directamente
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Sección Contraseña
-            SectionTitle("Cambiar contraseña:")
-            OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("Ingresa nueva contraseña") },
-                visualTransformation = PasswordVisualTransformation()
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Sección Teléfono
-            SectionTitle("Teléfono:")
-            OutlinedTextField(
-                value = telefono,
-                onValueChange = {
-                    if (it.startsWith("+57")) {
-                        telefono = it
-                    }
-                },
-                modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("+57") }
-            )
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            // Botón de actualizar
-            Button(
-                onClick = {
-                    if (currentUser != null) {
-                        updateUserData(
-                            userId = currentUser.uid,
-                            newName = nombre,
-                            newEmail = correo,
-                            newPhone = telefono,
-                            newPassword = if (password.isNotEmpty()) password else null,
-                            context = context,
-                            onSuccess = { Toast.makeText(context, "Datos actualizados", Toast.LENGTH_SHORT).show() }
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.2f))
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    SectionTitle("Nombre:")
+                    OutlinedTextField(
+                        value = nombre,
+                        onValueChange = { nombre = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        placeholder = { Text("Ingresa tu nombre",color = Color.White.copy(alpha = 0.7f)) },
+                        shape = RoundedCornerShape(25.dp),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            containerColor = Color(0xD080B0BF),
+                            focusedBorderColor = Color.Transparent,
+                            unfocusedBorderColor = Color.Transparent
                         )
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    SectionTitle("Correo electrónico:")
+                    OutlinedTextField(
+                        value = correo,
+                        onValueChange = { },
+                        enabled = false,
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(25.dp),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            containerColor = Color(0xD080B0BF),
+                            focusedBorderColor = Color.Transparent,
+                            unfocusedBorderColor = Color.Transparent
+                        )
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    SectionTitle("Cambiar contraseña:")
+                    OutlinedTextField(
+                        value = password,
+                        onValueChange = { password = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        visualTransformation = PasswordVisualTransformation(),
+                        placeholder = { Text("Nueva contraseña",color = Color.White.copy(alpha = 0.7f)) },
+                        shape = RoundedCornerShape(25.dp),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            containerColor = Color(0xD080B0BF),
+                            focusedBorderColor = Color.Transparent,
+                            unfocusedBorderColor = Color.Transparent
+                        )
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    SectionTitle("Teléfono:")
+                    OutlinedTextField(
+                        value = telefono,
+                        onValueChange = {
+                            if (it.startsWith("+57")) telefono = it
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        placeholder = { Text("+57 ...",color = Color.White.copy(alpha = 0.7f)) },
+                        shape = RoundedCornerShape(25.dp),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            containerColor = Color(0xD080B0BF),
+                            focusedBorderColor = Color.Transparent,
+                            unfocusedBorderColor = Color.Transparent
+                        )
+                    )
+
+                    Spacer(modifier = Modifier.height(30.dp))
+
+                    Button(
+                        onClick = {
+                            if (currentUser != null) {
+                                updateUserData(
+                                    currentUser.uid, nombre, correo, telefono, password.takeIf { it.isNotEmpty() }, context
+                                ) { Toast.makeText(context, "Datos actualizados", Toast.LENGTH_SHORT).show() }
+                            }
+                        },
+                        modifier = Modifier
+                            .width(200.dp)
+                            .height(50.dp)
+                            .align(Alignment.CenterHorizontally),
+                        shape = RoundedCornerShape(25.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5CC2C6))
+                    ) {
+                        Text("Actualizar", color = Color.White)
                     }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5CC2C6))
-            ) {
-                Text("Actualizar datos", color = Color.White)
-            }
 
-            Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
-            // Botón de cerrar sesión
-            Button(
-                onClick = { showLogoutDialog = true },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF44336)) // Rojo
-            ) {
-                Text("Cerrar sesión", color = Color.White)
-            }
+                    Button(
+                        onClick = { showLogoutDialog = true },
+                        modifier = Modifier.width(200.dp).height(50.dp).align(Alignment.CenterHorizontally),
+                        shape = RoundedCornerShape(25.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
+                    ) {
+                        Text("Cerrar sesión", color = Color.White)
+                    }
 
-            Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
-            // Botón de eliminar cuenta
-            TextButton(
-                onClick = { showDeleteDialog = true },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Eliminar cuenta permanentemente", color = Color.Red)
+                    TextButton(
+                        onClick = { showDeleteDialog = true },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Eliminar cuenta", color = Color.Red)
+                    }
+                }
             }
         }
     }
 }
+
 
 @Composable
 private fun SectionTitle(text: String) {
@@ -248,7 +282,7 @@ private fun SectionTitle(text: String) {
         text = text,
         fontWeight = FontWeight.Bold,
         fontSize = 16.sp,
-        color = Color.Gray,
+        color = Color.White,
         modifier = Modifier.padding(bottom = 8.dp)
     )
 }
@@ -267,17 +301,15 @@ private fun updateUserData(
 
     CoroutineScope(Dispatchers.IO).launch {
         try {
-            // Actualizar contraseña si se proporcionó
+            // actualizar contraseña si se proporcionó
             if (!newPassword.isNullOrEmpty()) {
                 auth.currentUser?.updatePassword(newPassword)?.await()
             }
-
-            // Actualizar datos en Firestore
+            // actualizar datos en firestore
             val updates = hashMapOf<String, Any>(
                 "names" to newName,
                 "phoneNumber" to newPhone
             )
-
             db.collection("users").document(userId).update(updates).await()
 
             withContext(Dispatchers.Main) {
@@ -292,29 +324,23 @@ private fun updateUserData(
     }
 }
 
-private fun deleteAccount(
-    userId: String,
-    context: Context,
-    onSuccess: () -> Unit
-) {
+private fun deleteAccount(userId: String, context: Context, onSuccess: () -> Unit) {
     val auth = Firebase.auth
     val db = Firebase.firestore
 
     CoroutineScope(Dispatchers.IO).launch {
         try {
-            // Eliminar datos de Firestore
+            // eliminar datos de firestore
             db.collection("users").document(userId).delete().await()
-
-            // Eliminar usuario de autenticación
+            // eliminar usuario de autenticación
             auth.currentUser?.delete()?.await()
-
             withContext(Dispatchers.Main) {
-                Toast.makeText(context, "Cuenta eliminada correctamente", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Cuenta eliminada", Toast.LENGTH_SHORT).show()
                 onSuccess()
             }
         } catch (e: Exception) {
             withContext(Dispatchers.Main) {
-                Toast.makeText(context, "Error al eliminar cuenta: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Error al eliminar: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }
