@@ -2,6 +2,7 @@ package com.example.calmaapp_proyect
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Call
@@ -18,6 +20,7 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -39,6 +42,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.draw.clip
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -48,8 +52,13 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.filled.Send
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.calmaapp_proyect.AccountScreen
 import com.example.calmaapp_proyect.R
@@ -204,85 +213,153 @@ fun HomeScreen(onStartChat: () -> Unit, navController: NavHostController) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreen(bakingViewModel: BakingViewModel, onExitChat: () -> Unit) {
     val placeholderPrompt = stringResource(R.string.prompt_placeholder)
-    var prompt by rememberSaveable { mutableStateOf(placeholderPrompt) }
+    var prompt by remember { mutableStateOf(placeholderPrompt) }
     val uiState by bakingViewModel.uiState.collectAsState()
     val chatMessages = remember { mutableStateOf(mutableListOf<ChatMessage>()) }
     var assistantResponseAdded by remember { mutableStateOf(false) }
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFDCD5D5)) // Fondo opcional para la pantalla
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End
-        ) {
-            IconButton(onClick = onExitChat) {
-                Icon(imageVector = Icons.Filled.Clear, contentDescription = "Salir del chat", tint = Color.White)
-            }
-        }
-
-        Text(
-            text = stringResource(R.string.baking_title),
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(16.dp)
-        )
-
-        LazyColumn(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f)
-                .padding(16.dp)
+                .background(Color(0xFF5CC2C6))
+                .padding(8.dp)
         ) {
-            items(chatMessages.value) { message ->
-                Text(
-                    text = "${message.sender}: ${message.text}",
-                    modifier = Modifier.padding(bottom = 8.dp)
+            // Sección superior del perfil
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Reemplaza con tu icono de perfil
+                Image(
+                    painter = painterResource(id = R.drawable.ic_chatbot), // Reemplaza con tu imagen del chatbot
+                    contentDescription = "Imagen del Chatbot",
+                    modifier = Modifier.size(100.dp)
                 )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Ryo", // Reemplaza con el nombre real
+                    fontSize = 20.sp,
+                    color = Color.White
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                IconButton(onClick = onExitChat) {
+                    Icon(
+                        Icons.Filled.Clear,
+                        contentDescription = "Salir del chat",
+                        tint = Color.White
+                    )
+                }
+            }
+        }
+        // Área para mostrar los mensajes
+        LazyColumn(
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = 8.dp),
+            reverseLayout = true // Muestra los mensajes desde abajo hacia arriba
+        ) {
+            items(chatMessages.value.reversed()) { message ->
+                ChatMessageBubble(message = message)
             }
         }
 
+        // Área de entrada de texto
         Row(
-            modifier = Modifier.padding(all = 16.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             TextField(
                 value = prompt,
-                label = { Text(stringResource(R.string.label_prompt)) },
                 onValueChange = { prompt = it },
                 modifier = Modifier
-                    .weight(0.8f)
-                    .padding(end = 16.dp)
-                    .align(Alignment.CenterVertically)
-            )
+                    .weight(1f)
+                    .clip(RoundedCornerShape(24.dp)),
+                colors = TextFieldDefaults.textFieldColors(
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    cursorColor = Color.Black, // Añade esto si el cursor no se ve
 
-            Button(
+                ),
+                placeholder = { Text("Dime, que quieres contarme hoy.", color = Color.Gray) }
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            IconButton(
                 onClick = {
                     if (prompt.isNotEmpty()) {
-                        chatMessages.value = (chatMessages.value + ChatMessage("Usuario", prompt)).toMutableList()
+                        chatMessages.value =
+                            (chatMessages.value + ChatMessage("Tú", prompt)).toMutableList()
                         bakingViewModel.sendPrompt(prompt)
                         prompt = ""
                         assistantResponseAdded = false
                     }
                 },
-                enabled = prompt.isNotEmpty(),
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
+                enabled = prompt.isNotEmpty()
             ) {
-                Text(text = stringResource(R.string.action_go))
+                Icon(Icons.Filled.Send, contentDescription = "Enviar", tint = Color.White)
             }
         }
 
+        // Indicadores de procesamiento
         if (uiState is UiState.Loading) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
         } else if (uiState is UiState.Success && !assistantResponseAdded) {
-            chatMessages.value = (chatMessages.value + ChatMessage("Asistente", (uiState as UiState.Success).outputText)).toMutableList()
+            chatMessages.value =
+                (chatMessages.value + ChatMessage("Ryo", (uiState as UiState.Success).outputText)).toMutableList()
             assistantResponseAdded = true
         } else if (uiState is UiState.Error && !assistantResponseAdded) {
-            chatMessages.value = (chatMessages.value + ChatMessage("Error", (uiState as UiState.Error).errorMessage)).toMutableList()
+            chatMessages.value =
+                (chatMessages.value + ChatMessage("Error", (uiState as UiState.Error).errorMessage)).toMutableList()
             assistantResponseAdded = true
         }
+    }
+}
+
+@Composable
+fun ChatMessageBubble(message: ChatMessage) {
+    val esMensajeDelUsuario = message.sender == "Tú"
+    val colorDeFondo = if (esMensajeDelUsuario) Color(0xFF5CC2C6) else Color.White
+    val alineacionHorizontal = if (esMensajeDelUsuario) Alignment.End else Alignment.Start // Corrección aquí
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp, horizontal = 8.dp),
+        horizontalAlignment = alineacionHorizontal // Usamos la alineación horizontal
+    ) {
+        Text(
+            text = message.sender,
+            color = Color.Gray,
+            textAlign = if (esMensajeDelUsuario) TextAlign.End else TextAlign.Start
+        )
+        Spacer(modifier = Modifier.height(2.dp))
+        Text(
+            text = message.text,
+            modifier = Modifier
+                .clip(
+                    RoundedCornerShape(
+                        topStart = 16.dp,
+                        topEnd = 16.dp,
+                        bottomStart = if (esMensajeDelUsuario) 16.dp else 4.dp,
+                        bottomEnd = if (esMensajeDelUsuario) 4.dp else 16.dp
+                    )
+                )
+                .background(colorDeFondo)
+                .padding(8.dp),
+            color = Color.Black
+        )
     }
 }
 
@@ -296,7 +373,7 @@ enum class Screen {
     Home, Chat, Calendar, Emotion, Notification, Call, Profile
 }
 
-@androidx.compose.ui.tooling.preview.Preview(showSystemUi = true)
+@Preview(showSystemUi = true)
 @Composable
 fun BakingScreenPreview() {
     WelcomeScreen(onSignInClick = {}, onSignUpClick = {})
