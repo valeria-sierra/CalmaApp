@@ -9,12 +9,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Call
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
@@ -22,7 +21,6 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,26 +28,29 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.TextField
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import com.example.calmaapp_proyect.AccountScreen
 import com.example.calmaapp_proyect.R
 
@@ -59,60 +60,76 @@ import com.example.calmaapp_proyect.R
 fun BakingScreen(
     onLogout: () -> Unit = {},
     bakingViewModel: BakingViewModel = viewModel(),
-    navController: NavHostController = rememberNavController() // Añadimos el NavController
+    navController: NavHostController = rememberNavController()
 ) {
     var currentScreen by remember { mutableStateOf<Screen>(Screen.Home) }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color.Transparent // Asegúrate de que el Surface sea transparente para mostrar la imagen de fondo
+        color = Color.Transparent
     ) {
         Image(
-            painter = painterResource(id = R.drawable.ic_background), // Reemplaza con el nombre de tu imagen de fondo
+            painter = painterResource(id = R.drawable.ic_background), // Reemplaza con tu imagen de fondo
             contentDescription = "Fondo de la aplicación",
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
         )
         Scaffold(
             topBar = {
-                TopAppBar(
-                    title = { Text(text = "Calma App") },
-                    actions = {
-                        IconButton(onClick = { currentScreen = Screen.Profile }) {
-                            Icon(imageVector = Icons.Filled.AccountCircle, contentDescription = "Perfil", tint = Color.White)
-                        }
-                    },
-                    modifier = Modifier.background(Color.Transparent)
-                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start // Alinea el icono a la izquierda
+                ) {
+                    IconButton(onClick = { currentScreen = Screen.Profile }, modifier = Modifier.size(48.dp)) { // Aumenta el tamaño del icono
+                        Icon(
+                            imageVector = Icons.Filled.AccountCircle,
+                            contentDescription = "Perfil",
+                            tint = Color.White,
+                            modifier = Modifier.size(36.dp) // Ajusta el tamaño del icono dentro del botón
+                        )
+                    }
+                    Spacer(modifier = Modifier.weight(1f)) // Ocupa el espacio restante
+                }
             },
             bottomBar = {
-                BottomAppBar(modifier = Modifier.background(Color(0xFF5CC2C6).copy(alpha = 0.8f))) { // Fondo semi-transparente
-                    IconButton(onClick = { currentScreen = Screen.Home }, modifier = Modifier.weight(1f)) {
-                        Icon(imageVector = Icons.Filled.Home, contentDescription = "Inicio", tint = Color.White)
-                    }
-                    IconButton(onClick = { currentScreen = Screen.Calendar }, modifier = Modifier.weight(1f)) {
-                        Icon(imageVector = Icons.Filled.DateRange, contentDescription = "Calendario", tint = Color.White)
-                    }
-                    IconButton(onClick = { currentScreen = Screen.Emotion }, modifier = Modifier.weight(1f)) {
-                        Icon(imageVector = Icons.Filled.Favorite, contentDescription = "Ayuda emocional", tint = Color.White)
-                    }
-                    IconButton(onClick = { currentScreen = Screen.Notification }, modifier = Modifier.weight(1f)) {
-                        Icon(imageVector = Icons.Filled.Notifications, contentDescription = "Notificaciones", tint = Color.White)
-                    }
-                    IconButton(onClick = { currentScreen = Screen.Call }, modifier = Modifier.weight(1f)) {
-                        Icon(imageVector = Icons.Filled.Call, contentDescription = "Llamadas", tint = Color.White)
+                BottomAppBar(
+                    modifier = Modifier.fillMaxWidth(), // Asegúrate de que ocupe todo el ancho
+                    containerColor = Color(0xFF5CC2C6) // Establece el color de fondo aquí
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceAround // Distribuye los iconos uniformemente
+                    ) {
+                        IconButton(onClick = { currentScreen = Screen.Home }) {
+                            Icon(Icons.Filled.Home, contentDescription = "Inicio", tint = Color.White)
+                        }
+                        IconButton(onClick = { currentScreen = Screen.Calendar }) {
+                            Icon(Icons.Filled.DateRange, contentDescription = "Calendario", tint = Color.White)
+                        }
+                        IconButton(onClick = { currentScreen = Screen.Emotion }) {
+                            Icon(Icons.Filled.Favorite, contentDescription = "Ayuda emocional", tint = Color.White)
+                        }
+                        IconButton(onClick = { currentScreen = Screen.Notification }) {
+                            Icon(Icons.Filled.Notifications, contentDescription = "Notificaciones", tint = Color.White)
+                        }
+                        IconButton(onClick = { currentScreen = Screen.Call }) {
+                            Icon(Icons.Filled.Call, contentDescription = "Llamadas", tint = Color.White)
+                        }
                     }
                 }
             },
-            containerColor = Color.Transparent, // Fondo del Scaffold transparente
+            containerColor = Color.Transparent,
             modifier = Modifier.fillMaxSize()
         ) { innerPadding ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top // Alinea los elementos desde la parte superior
             ) {
                 when (currentScreen) {
                     Screen.Home -> HomeScreen(onStartChat = { currentScreen = Screen.Chat }, navController = navController)
@@ -134,34 +151,56 @@ fun BakingScreen(
 @Composable
 fun HomeScreen(onStartChat: () -> Unit, navController: NavHostController) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 20.dp), // Añade un poco de padding horizontal
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.spacedBy(3.dp, Alignment.Top) // Alinea desde la parte superior
     ) {
-        Text(
-            text = "Calma App",
-            style = MaterialTheme.typography.headlineLarge,
-            modifier = Modifier.padding(bottom = 16.dp)
+        Spacer(modifier = Modifier.height(0.dp)) // Espacio para el icono de perfil
+
+        Image(
+            painter = painterResource(id = R.drawable.ic_logo), // Reemplaza con tu logo
+            contentDescription = "Logo de Calma App",
+            modifier = Modifier.size(170.dp)
         )
+
         Text(
-            text = "¿Te puedo ayudar en algo?",
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.padding(bottom = 32.dp)
+            text = "¿en qué puedo ayudarte?",
+            style = MaterialTheme.typography.bodyLarge.copy(color = Color.White)
         )
+
+        Image(
+            painter = painterResource(id = R.drawable.ic_chatbot), // Reemplaza con tu imagen del chatbot
+            contentDescription = "Imagen del Chatbot",
+            modifier = Modifier.size(120.dp)
+        )
+
+        val buttonWidth = 200.dp // Define un ancho común para los botones
+
         Button(
             onClick = onStartChat,
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5CC2C6))
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5CC2C6)),
+            modifier = Modifier.width(buttonWidth)
         ) {
             Text(text = "Iniciar chat")
         }
-        Spacer(modifier = Modifier.height(16.dp))
-        IconButton(onClick = { navController.navigate("history") }) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_history), // Reemplaza ic_history con el nombre de tu archivo drawable
-                contentDescription = "Historial",
 
-            )
+        Image(
+            painter = painterResource(id = R.drawable.ic_chatbot), // Reemplaza con tu imagen del chatbot
+            contentDescription = "Imagen del Chatbot",
+            modifier = Modifier.size(120.dp)
+        )
+
+        Button(
+            onClick = { navController.navigate("history") },
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5CC2C6)),
+            modifier = Modifier.width(buttonWidth)
+        ) {
+            Text(text = "Historial de chats")
         }
+
+        Spacer(modifier = Modifier.weight(2f)) // Empuja el contenido hacia arriba
     }
 }
 
@@ -257,9 +296,8 @@ enum class Screen {
     Home, Chat, Calendar, Emotion, Notification, Call, Profile
 }
 
-@Preview(showSystemUi = true)
+@androidx.compose.ui.tooling.preview.Preview(showSystemUi = true)
 @Composable
 fun BakingScreenPreview() {
-// Preview ahora muestra la WelcomeScreen
     WelcomeScreen(onSignInClick = {}, onSignUpClick = {})
 }
