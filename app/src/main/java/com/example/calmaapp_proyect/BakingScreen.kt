@@ -1,4 +1,5 @@
 package com.example.calmaapp_proyect
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -58,6 +59,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.filled.Send
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.calmaapp_proyect.AccountScreen
@@ -221,6 +223,10 @@ fun ChatScreen(bakingViewModel: BakingViewModel, onExitChat: () -> Unit) {
     val uiState by bakingViewModel.uiState.collectAsState()
     val chatMessages = remember { mutableStateOf(mutableListOf<ChatMessage>()) }
     var assistantResponseAdded by remember { mutableStateOf(false) }
+
+    LaunchedEffect(true) {
+        Log.d("ChatScreen", "Valor de prompt en recomposición: '$prompt'")
+    }
 
     Column(
         modifier = Modifier

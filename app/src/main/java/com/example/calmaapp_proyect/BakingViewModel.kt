@@ -40,7 +40,7 @@ class BakingViewModel : ViewModel() {
 
     fun sendPrompt(prompt: String) {
         _uiState.value = UiState.Loading
-        val userMessage = ChatMessage("Usuario", prompt, Date())
+        val userMessage = ChatMessage("Tú", prompt, Date())
         currentConversationMessages.add(userMessage)
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -60,7 +60,7 @@ class BakingViewModel : ViewModel() {
                     }
                 )
                 response.text?.let { outputContent ->
-                    val assistantMessage = ChatMessage("Asistente", outputContent, Date())
+                    val assistantMessage = ChatMessage("Ryo", outputContent, Date())
                     currentConversationMessages.add(assistantMessage)
                     _uiState.value = UiState.Success(outputContent)
                     saveConversation() // Guardar la conversación después de la respuesta
@@ -75,14 +75,20 @@ class BakingViewModel : ViewModel() {
 
     private fun saveConversation() {
         userId?.let { uid ->
-            val conversation = Conversation(userId = uid, messages = currentConversationMessages.toList())
+            val title = if (currentConversationMessages.isNotEmpty()) {
+                val firstMessage = currentConversationMessages.first().text.take(20) + "..."
+                "Conversación: $firstMessage"
+            } else {
+                "Conversación del ${Date()}"
+            }
+            val conversation = Conversation(userId = uid, messages = currentConversationMessages.toList(), title = title)
             db.collection("users")
                 .document(uid)
                 .collection("conversations")
                 .add(conversation)
                 .addOnSuccessListener { documentReference ->
                     Log.d("BakingViewModel", "Conversación guardada con ID: ${documentReference.id}")
-                    currentConversationMessages.clear() // Limpiar para la siguiente conversación
+                    currentConversationMessages.clear()
                 }
                 .addOnFailureListener { e ->
                     Log.w("BakingViewModel", "Error al guardar la conversación", e)
