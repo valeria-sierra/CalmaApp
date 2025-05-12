@@ -77,5 +77,6 @@ dependencies {
 
     // ... otras dependencias ...
     implementation("androidx.compose.runtime:runtime-saveable:1.6.5")
+    implementation("androidx.compose.material:material-icons-extended:1.6.5")
 
 }

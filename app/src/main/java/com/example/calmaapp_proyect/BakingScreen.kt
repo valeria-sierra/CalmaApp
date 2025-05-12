@@ -115,19 +115,16 @@ fun BakingScreen(
                         horizontalArrangement = Arrangement.SpaceAround // Distribuye los iconos uniformemente
                     ) {
                         IconButton(onClick = { currentScreen = Screen.Home }) {
-                            Icon(Icons.Filled.Home, contentDescription = "Inicio", tint = Color.White)
+                            Icon(Icons.Filled.Home, contentDescription = "Inicio", tint = Color.White,modifier = Modifier.size(25.dp, 25.dp))
                         }
                         IconButton(onClick = { currentScreen = Screen.Calendar }) {
-                            Icon(Icons.Filled.DateRange, contentDescription = "Calendario", tint = Color.White)
+                            Icon(Icons.Filled.DateRange, contentDescription = "Calendario", tint = Color.White,modifier = Modifier.size(25.dp, 25.dp))
                         }
                         IconButton(onClick = { currentScreen = Screen.Emotion }) {
-                            Icon(Icons.Filled.Favorite, contentDescription = "Ayuda emocional", tint = Color.White)
-                        }
-                        IconButton(onClick = { currentScreen = Screen.Notification }) {
-                            Icon(Icons.Filled.Notifications, contentDescription = "Notificaciones", tint = Color.White)
+                            Icon(Icons.Filled.Favorite, contentDescription = "Ayuda emocional", tint = Color.White,modifier = Modifier.size(25.dp, 25.dp))
                         }
                         IconButton(onClick = { currentScreen = Screen.Call }) {
-                            Icon(Icons.Filled.Call, contentDescription = "Llamadas", tint = Color.White)
+                            Icon(Icons.Filled.Call, contentDescription = "Llamadas", tint = Color.White,modifier = Modifier.size(25.dp, 25.dp))
                         }
                     }
                 }
@@ -147,7 +144,6 @@ fun BakingScreen(
                     Screen.Chat -> ChatScreen(bakingViewModel) { currentScreen = Screen.Home }
                     Screen.Calendar -> GenericScreen(screenName = "Calendario")
                     Screen.Emotion -> MainRelaxScreen()
-                    Screen.Notification -> GenericScreen(screenName = "Notificaciones")
                     Screen.Call -> GenericScreen(screenName = "Llamadas")
                     Screen.Profile -> AccountScreen(
                         onBackClick = { currentScreen = Screen.Home },
@@ -376,7 +372,7 @@ fun GenericScreen(screenName: String) {
 
 data class ChatMessage(val sender: String, val text: String)
 enum class Screen {
-    Home, Chat, Calendar, Emotion, Notification, Call, Profile
+    Home, Chat, Calendar, Emotion, Call, Profile
 }
 
 @Preview(showSystemUi = true)
