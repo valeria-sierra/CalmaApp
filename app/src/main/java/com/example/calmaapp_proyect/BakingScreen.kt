@@ -160,7 +160,7 @@ fun BakingScreen(
                 when (currentScreen) {
                     Screen.Home -> HomeScreen(onStartChat = { currentScreen = Screen.Chat }, navController = navController)
                     Screen.Chat -> ChatScreen(bakingViewModel) { currentScreen = Screen.Home }
-                    Screen.Calendar -> GenericScreen(screenName = "Calendario")
+                    Screen.Calendar -> CalmaAppEntry()
                     Screen.Emotion -> MainRelaxScreen()
                     Screen.Call -> GenericScreen(screenName = "Llamadas")
                     Screen.Profile -> AccountScreen(

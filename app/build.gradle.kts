@@ -52,6 +52,11 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.generativeai)
 
+
+    //*agregue este codigo para que me de la vista de las estadisticas*//
+
+
+
     // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
