@@ -64,6 +64,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.calmaapp_proyect.AccountScreen
 import com.example.calmaapp_proyect.R
+import android.net.Uri
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.foundation.shape.CircleShape
+import coil.compose.rememberAsyncImagePainter
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -73,7 +79,9 @@ fun BakingScreen(
     bakingViewModel: BakingViewModel = viewModel(),
     navController: NavHostController = rememberNavController()
 ) {
-    var currentScreen by remember { mutableStateOf<Screen>(Screen.Home) }
+        var currentScreen by remember { mutableStateOf<Screen>(Screen.Home) }
+        val profileImageUri by remember { mutableStateOf(AppState.profileImageUri)
+    }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -95,14 +103,24 @@ fun BakingScreen(
                     horizontalArrangement = Arrangement.Start // Alinea el icono a la izquierda
                 ) {
                     IconButton(onClick = { currentScreen = Screen.Profile }, modifier = Modifier.size(48.dp)) { // Aumenta el tamaño del icono
-                        Icon(
-                            imageVector = Icons.Filled.AccountCircle,
-                            contentDescription = "Perfil",
-                            tint = Color.White,
-                            modifier = Modifier.size(36.dp) // Ajusta el tamaño del icono dentro del botón
-                        )
-                    }
+                        if (profileImageUri != null) {
+                            Image(
+                                painter = rememberAsyncImagePainter(AppState.profileImageUri),
+                                contentDescription = "Perfil",
+                                modifier = Modifier.size(36.dp).clip(CircleShape),
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+
+                            Icon(
+                                imageVector = Icons.Filled.AccountCircle,
+                                contentDescription = "Perfil",
+                                tint = Color.White,
+                                modifier = Modifier.size(36.dp) // Ajusta el tamaño del icono dentro del botón
+                                )
+                                }
                     Spacer(modifier = Modifier.weight(1f)) // Ocupa el espacio restante
+                    }
                 }
             },
             bottomBar = {

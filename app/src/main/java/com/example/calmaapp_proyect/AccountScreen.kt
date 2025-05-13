@@ -1,9 +1,17 @@
 package com.example.calmaapp_proyect
 
-import android.content.Context
+
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
+import android.net.Uri
 import android.widget.Toast
+import androidx.compose.ui.draw.clip
+import android.content.Context
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -24,14 +32,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,9 +50,9 @@ fun AccountScreen(
 ) {
     val auth = Firebase.auth
     val db = Firebase.firestore
+    val storage = Firebase.storage
     val currentUser = auth.currentUser
     val context = LocalContext.current
-
     var nombre by remember { mutableStateOf("") }
     var correo by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -51,6 +60,8 @@ fun AccountScreen(
     var isLoading by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showLogoutDialog by remember { mutableStateOf(false) }
+    var profileImageUri by remember { mutableStateOf<Uri?>(null) }
+
 
     //cargar datos del usuario al iniciar
     LaunchedEffect(Unit) {
@@ -60,11 +71,29 @@ fun AccountScreen(
             nombre = userDoc.getString("names") ?: ""
             correo = userDoc.getString("email") ?: currentUser?.email ?: ""
             telefono = userDoc.getString("phoneNumber") ?: "+57 "
+            val imageUrl = userDoc.getString("profileImageUrl")
+            if (!imageUrl.isNullOrEmpty()) {
+                profileImageUri = Uri.parse(imageUrl)
+                AppState.updateProfileImage(profileImageUri)
+            }
         } catch (e: Exception) {
             Toast.makeText(context, "Error cargando datos: ${e.message}", Toast.LENGTH_SHORT).show()
         }
         isLoading = false
     }
+
+    // Lanzador para seleccionar imagen
+    val imagePicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { uri ->
+            uri?.let {uploadProfileImage(it, currentUser?.uid ?: "", context) { downloadUri ->
+                profileImageUri = downloadUri
+                AppState.updateProfileImage(downloadUri)
+                Toast.makeText(context, "Imagen actualizada", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    )
     //diálogo para confirmar eliminación de cuenta
     if (showDeleteDialog) {
         AlertDialog(
@@ -130,20 +159,37 @@ fun AccountScreen(
                 Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
             }
         }
+        // Sección de foto de perfil actualizada
         Box(
             modifier = Modifier
-                .size(80.dp)
-                .background(Color.White, shape = CircleShape),
+                .size(120.dp)
+                .clip(CircleShape)
+                .background(Color.White)
+                .clickable { imagePicker.launch("image/*") },
             contentAlignment = Alignment.Center
         ) {
-
-            Icon(
-                imageVector = Icons.Default.AccountCircle,
-                contentDescription = null,
-                modifier = Modifier.size(70.dp),
-                tint = Color(0xFF5CC2C6)
-            )
+            if (profileImageUri != null) {
+                Image(
+                    painter = rememberAsyncImagePainter(profileImageUri),
+                    contentDescription = "Foto de perfil",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            } else {
+                Icon(
+                    imageVector = Icons.Default.AccountCircle,
+                    contentDescription = "Seleccionar foto",
+                    modifier = Modifier.size(100.dp),
+                    tint = Color(0xFF5CC2C6)
+                )
+            }
         }
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "Haz clic para cambiar foto",
+            color = Color.White,
+            fontSize = 12.sp
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -285,6 +331,33 @@ private fun SectionTitle(text: String) {
         color = Color.White,
         modifier = Modifier.padding(bottom = 8.dp)
     )
+}
+
+// Función para subir imagen a Firebase Storage
+private fun uploadProfileImage(
+    imageUri: Uri,
+    userId: String,
+    context: Context,
+    onSuccess: (Uri) -> Unit
+) {
+    val storageRef = Firebase.storage.reference
+    val imageRef = storageRef.child("profile_images/$userId/${System.currentTimeMillis()}.jpg")
+
+    imageRef.putFile(imageUri)
+        .addOnSuccessListener {
+            imageRef.downloadUrl.addOnSuccessListener { uri ->
+                // Guardar URL en Firestore
+                Firebase.firestore.collection("users").document(userId)
+                    .update("profileImageUrl", uri.toString())
+                    .addOnSuccessListener {
+                        onSuccess(uri)
+
+                    }
+            }
+        }
+        .addOnFailureListener { e ->
+            Toast.makeText(context, "Error al subir imagen: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
 }
 
 private fun updateUserData(

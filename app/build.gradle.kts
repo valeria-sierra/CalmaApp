@@ -41,6 +41,7 @@ android {
         compose = true
         buildConfig = true
     }
+
 }
 
 dependencies {
@@ -68,15 +69,31 @@ dependencies {
     // Firebase (usando BOM)
     implementation(platform(libs.firebase.bom))
     implementation("com.google.firebase:firebase-auth-ktx")
+    implementation ("com.google.firebase:firebase-storage-ktx:20.0.0")
+    implementation ("com.google.firebase:firebase-firestore-ktx:24.0.0")
     implementation("com.google.firebase:firebase-firestore-ktx")
     implementation(platform("androidx.compose:compose-bom:2023.08.00")) // Usa tu versión actual
     implementation ("androidx.compose.runtime:runtime-livedata")
+    implementation("com.google.firebase:firebase-storage-ktx")
 
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.4")
 
     // ... otras dependencias ...
     implementation("androidx.compose.runtime:runtime-saveable:1.6.5")
+    implementation ("androidx.core:core-ktx:1.10.1")
     implementation("androidx.compose.material:material-icons-extended:1.6.5")
+    implementation ("androidx.compose.ui:ui:1.5.4") // o versión más reciente
+    implementation("io.coil-kt:coil-compose:2.4.0") // o versión más reciente
 
+    // Firebase BoM (Bill of Materials) para gestionar versiones
+    implementation (platform("com.google.firebase:firebase-bom:32.0.0"))
+
+    // Dependencias básicas de Firebase
+    implementation ("com.google.firebase:firebase-auth-ktx")
+    implementation ("com.google.firebase:firebase-firestore-ktx")
+    implementation ("com.google.firebase:firebase-storage-ktx")
+
+    // Firebase Analytics (opcional)
+    implementation ("com.google.firebase:firebase-analytics-ktx")
 }
