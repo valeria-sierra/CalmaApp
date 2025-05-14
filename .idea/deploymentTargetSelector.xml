@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-05-13T21:21:17.077746200Z">
+        <DropdownSelection timestamp="2025-05-13T23:10:43.769675200Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="PhysicalDevice" identifier="serial=MNWCJ7XST4L7LB7X" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\HUAWEI.DESKTOP-K28R60C\.android\avd\Pixel_API_28.avd" />
             </handle>
           </Target>
         </DropdownSelection>
