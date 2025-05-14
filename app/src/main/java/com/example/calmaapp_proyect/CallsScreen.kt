@@ -450,7 +450,7 @@ fun LineasYContactosTabs(selectedTab: String, onTabSelected: (String) -> Unit) {
                 .padding(horizontal = 2.dp)
                 .height(48.dp)
         ) {
-            Text("Líneas de crisis", color = Color.White, fontSize = 16.sp)
+            Text("Líneas de crisis", color = Color.White, fontSize = 14.sp)
         }
 
         Button(
@@ -464,7 +464,7 @@ fun LineasYContactosTabs(selectedTab: String, onTabSelected: (String) -> Unit) {
                 .padding(horizontal = 2.dp)
                 .height(48.dp)
         ) {
-            Text("Contactos", color = Color.White, fontSize = 16.sp)
+            Text("Contactos", color = Color.White, fontSize = 14.sp)
         }
     }
 }
