@@ -80,6 +80,8 @@ fun BakingScreen(
     navController: NavHostController = rememberNavController()
 ) {
         var currentScreen by remember { mutableStateOf<Screen>(Screen.Home) }
+        var mostrandoPantalla by remember { mutableStateOf("calls") }
+        var contactoAEditar by remember { mutableStateOf<ContactoEmergencia?>(null) }
         val profileImageUri by remember { mutableStateOf(AppState.profileImageUri)
     }
 
@@ -162,7 +164,35 @@ fun BakingScreen(
                     Screen.Chat -> ChatScreen(bakingViewModel) { currentScreen = Screen.Home }
                     Screen.Calendar -> CalmaAppEntry()
                     Screen.Emotion -> MainRelaxScreen()
-                    Screen.Call -> GenericScreen(screenName = "Llamadas")
+                    Screen.Call -> {
+                        when (mostrandoPantalla) {
+                            "calls" -> CallsScreen(
+                                onAddContact = { mostrandoPantalla = "addContact" },
+                                onEditContact = { contacto -> // MODIFICACIÓN: Lógica para navegar a EditContactScreen
+                                    contactoAEditar = contacto
+                                    mostrandoPantalla = "editContact"
+                                }
+                            )
+                            "addContact" -> AddContactScreen(onBack = { mostrandoPantalla = "calls" }, onGuardarContacto = { /* TODO: Guardar contacto */ })
+                            "editContact" -> contactoAEditar?.let { contacto ->
+                                EditContactScreen(
+                                    contactoId = contacto.id,
+                                    nombreInicial = contacto.nombre,
+                                    apellidoInicial = contacto.apellido,
+                                    telefonoInicial = contacto.telefono,
+                                    parentescoInicial = contacto.parentesco,
+                                    onBack = {
+                                        contactoAEditar = null
+                                        mostrandoPantalla = "calls"
+                                    },
+                                    onUpdated = {
+                                        contactoAEditar = null
+                                        mostrandoPantalla = "calls"
+                                    }
+                                )
+                            }
+                        }
+                    }
                     Screen.Profile -> AccountScreen(
                         onBackClick = { currentScreen = Screen.Home },
                         onLogout = onLogout
