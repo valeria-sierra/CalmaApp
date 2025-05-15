@@ -77,6 +77,7 @@ fun RelaxScreen(navController: NavHostController, relaxViewModel: RelaxViewModel
             Text(
                 text = "Técnicas de relajación",
                 fontSize = 18.sp,
+                color= Color.White,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
 
@@ -102,6 +103,7 @@ fun RelaxScreen(navController: NavHostController, relaxViewModel: RelaxViewModel
             Text(
                 text = "¿Qué necesitas?",
                 fontSize = 18.sp,
+                color= Color.White,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
 
@@ -247,11 +249,12 @@ fun SavedRelax(navController: NavHostController, relaxViewModel: RelaxViewModel 
                     .fillMaxWidth()
             ) {
                 IconButton(onClick = { navController.navigate("relaxScreen") }) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
+                    Icon(Icons.Default.ArrowBack, contentDescription = "Volver",tint = Color.White)
                 }
                 Text(
                     text = "Guardados",
                     fontSize = 24.sp,
+                    color= Color.White,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(start = 8.dp)
                 )
@@ -263,6 +266,7 @@ fun SavedRelax(navController: NavHostController, relaxViewModel: RelaxViewModel 
                 Text(
                     text = "No has guardado ninguna técnica.",
                     fontSize = 18.sp,
+                    color= Color.White,
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
             } else {
@@ -330,11 +334,12 @@ fun CompletedRelax(navController: NavHostController,relaxViewModel: RelaxViewMod
                     .fillMaxWidth()
             ) {
                 IconButton(onClick = { navController.navigate("relaxScreen") }) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
+                    Icon(Icons.Default.ArrowBack, contentDescription = "Volver",tint = Color.White)
                 }
                 Text(
                     text = "Completados",
                     fontSize = 24.sp,
+                    color= Color.White,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(start = 8.dp)
                 )
@@ -346,6 +351,7 @@ fun CompletedRelax(navController: NavHostController,relaxViewModel: RelaxViewMod
                 Text(
                     text = "No has completado ninguna técnica.",
                     fontSize = 18.sp,
+                    color= Color.White,
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
             } else {
@@ -474,7 +480,7 @@ fun Tecnica369Screen(navController: NavHostController, relaxViewModel: RelaxView
             Row(verticalAlignment = Alignment.CenterVertically,horizontalArrangement = Arrangement.Start,modifier = Modifier
                 .fillMaxWidth()) {
                 IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
+                    Icon(Icons.Default.ArrowBack, contentDescription = "Volver",tint = Color.White)
                 }
             }
 
@@ -485,6 +491,7 @@ fun Tecnica369Screen(navController: NavHostController, relaxViewModel: RelaxView
                 Text(
                     text = tecnica.nombre,
                     fontSize = 20.sp,
+                    color= Color.White,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
@@ -618,7 +625,7 @@ fun RelajacionMuscularScreen(navController: NavHostController, relaxViewModel: R
                 modifier = Modifier.fillMaxWidth()
             ) {
                 IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
+                    Icon(Icons.Default.ArrowBack, contentDescription = "Volver",tint = Color.White)
                 }
             }
 
@@ -628,6 +635,7 @@ fun RelajacionMuscularScreen(navController: NavHostController, relaxViewModel: R
                 Text(
                     text = tecnica.nombre,
                     fontSize = 20.sp,
+                    color= Color.White,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
@@ -673,7 +681,7 @@ fun RelajacionMuscularScreen(navController: NavHostController, relaxViewModel: R
                     ) {
                         if (currentStepIndex > 0) {
                             IconButton(onClick = { currentStepIndex-- }) {
-                                Icon(Icons.Default.ArrowBack, contentDescription = "Anterior")
+                                Icon(Icons.Default.ArrowBack, contentDescription = "Anterior",tint = Color.White)
                             }
                         } else {
                             Spacer(modifier = Modifier.width(120.dp))
@@ -681,11 +689,11 @@ fun RelajacionMuscularScreen(navController: NavHostController, relaxViewModel: R
 
                         if (currentStepIndex < totalSteps - 1) {
                             IconButton(onClick = { currentStepIndex++ }) {
-                                Icon(Icons.Default.ArrowForward, contentDescription = "Siguiente")
+                                Icon(Icons.Default.ArrowForward, contentDescription = "Siguiente",tint = Color.White)
                             }
                         } else {
                             IconButton(onClick = { showFinalOptions = true }) {
-                                Icon(Icons.Default.ArrowForward, contentDescription = "Terminar")
+                                Icon(Icons.Default.ArrowForward, contentDescription = "Terminar",tint = Color.White)
                             }
                         }
                     }
@@ -781,7 +789,7 @@ fun VisualizacionGuiadaScreen(navController: NavHostController, relaxViewModel: 
         ) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start, modifier = Modifier.fillMaxWidth()) {
                 IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
+                    Icon(Icons.Default.ArrowBack, contentDescription = "Volver",tint= Color.White)
                 }
             }
 
@@ -791,6 +799,7 @@ fun VisualizacionGuiadaScreen(navController: NavHostController, relaxViewModel: 
                 Text(
                     text = tecnica.nombre,
                     fontSize = 20.sp,
+                    color= Color.White,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
