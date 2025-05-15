@@ -64,9 +64,6 @@ Instrucciones para que otros puedan clonar y ejecutar tu proyecto localmente:
 4.  **Ejecutar la Aplicación:**
     * Asegúrate de tener un dispositivo Android conectado o un emulador en funcionamiento.
     * Dentro del archivo (local.properties) ingresa la Api key del proyecto:
-      ```bash
-      apiKey=AIzaSyCvUNSOejfCKf1dAw21jjKGdLJQDOsX8Xs
-      ```
     * En Android Studio, haz clic en el botón "Run" (el icono de triángulo verde) o selecciona "Run 'app'" desde el menú "Run".
     * La aplicación se construirá e instalará en tu dispositivo/emulador.
 
