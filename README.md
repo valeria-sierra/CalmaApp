@@ -21,7 +21,6 @@ CalmaApp_proyect es una aplicación para Android desarrollada con Jetpack Compos
   <img src="app/src/main/res/drawable/captura 7.jpg" width="200" alt="Pantalla de [Funcionalidad]">
   </p>
 
-**Nota:** Reemplaza `/screenshots/screenshot*.png` con las rutas reales a tus capturas de pantalla dentro de tu repositorio.
 
 ## Funcionalidades Principales
 
