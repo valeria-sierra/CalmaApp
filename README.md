@@ -8,18 +8,7 @@
 
 CalmaApp_proyect es una aplicación para Android desarrollada con Jetpack Compose que tiene como objetivo ayudar a estudiantes universitarios a gestionar su estrés y ansiedad a través de ejercicios de respiración y meditación guiada, proporcionar un espacio para el seguimiento del estado de ánimo y ofrecer recursos de bienestar.
 
-## Capturas de Pantalla
 
-
-<p align="center">
-  <img src="app/src/main/res/drawable/captura 1.jpg" width="200" alt="Pantalla Principal">
-  <img src="app/src/main/res/drawable/captura 2.jpg" width="200" alt="Pantalla de [Funcionalidad]">
-  <img src="app/src/main/res/drawable/captura 3.jpg" width="200" alt="Pantalla de [Funcionalidad]">
-  <img src="app/src/main/res/drawable/captura 4.jpg" width="200" alt="Pantalla de [Funcionalidad]">
-  <img src="app/src/main/res/drawable/captura 5.jpg" width="200" alt="Pantalla de [Funcionalidad]">
-  <img src="app/src/main/res/drawable/captura 6.jpg" width="200" alt="Pantalla de [Funcionalidad]">
-  <img src="app/src/main/res/drawable/captura 7.jpg" width="200" alt="Pantalla de [Funcionalidad]">
-  </p>
 
 
 ## Funcionalidades Principales
